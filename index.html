@@ -43,9 +43,11 @@
   }
   .title h1{font-size:clamp(20px,2.6vw,30px);letter-spacing:-.5px;color:#fff;text-shadow:0 2px 10px rgba(11,58,94,.35)}
   .title p{color:#eaf6ff;font-size:14px;margin-top:2px;text-shadow:0 1px 6px rgba(11,58,94,.3)}
+  .analog{margin-left:22px;width:92px;height:92px;flex:none;filter:drop-shadow(0 6px 14px rgba(11,58,94,.3))}
+  .analog svg{width:92px;height:92px;display:block}
   .clock{margin-left:auto;text-align:right;color:#fff;text-shadow:0 2px 10px rgba(11,58,94,.35)}
-  .clock .t{font-size:clamp(26px,4vw,40px);font-weight:700;font-variant-numeric:tabular-nums}
-  .clock .d{font-size:14px;opacity:.95}
+  .clock .t{font-size:clamp(18px,2.4vw,26px);font-weight:700;font-variant-numeric:tabular-nums}
+  .clock .d{font-size:17px;font-weight:700;opacity:.97}
 
   /* 검색바 */
   .searchbar{display:flex;gap:8px;background:var(--card);padding:8px;border-radius:16px;
@@ -169,6 +171,7 @@
       <div class="t" id="time">--:--:--</div>
       <div class="d" id="date">----년 --월 --일</div>
     </div>
+    <div class="analog"><svg id="analogSvg" viewBox="0 0 100 100"></svg></div>
   </header>
 
   <!-- 통합 검색 -->
@@ -283,7 +286,33 @@ function tick(){
   else if(h<22)g='오늘 하루도 수고 많으셨습니다.';
   else g='늦은 시간이네요. 마무리 잘 하세요.';
   document.getElementById('greet').textContent=g;
+  updateAnalog(d);
 }
+function buildAnalog(){
+  var svg=document.getElementById('analogSvg'); if(!svg||svg.childNodes.length)return;
+  var s='<circle cx="50" cy="50" r="47" fill="#fff" stroke="#cfe6ff" stroke-width="2"/>';
+  for(var i=0;i<60;i++){
+    var ang=i*6*Math.PI/180, outer=46, inner=(i%5===0)?40:43;
+    s+='<line x1="'+(50+Math.sin(ang)*outer).toFixed(1)+'" y1="'+(50-Math.cos(ang)*outer).toFixed(1)+'" x2="'+(50+Math.sin(ang)*inner).toFixed(1)+'" y2="'+(50-Math.cos(ang)*inner).toFixed(1)+'" stroke="#2b4a66" stroke-width="'+(i%5===0?1.6:0.7)+'" stroke-linecap="round"/>';
+  }
+  for(var n=1;n<=12;n++){
+    var a=n*30*Math.PI/180, r=33;
+    s+='<text x="'+(50+Math.sin(a)*r).toFixed(1)+'" y="'+(50-Math.cos(a)*r+3).toFixed(1)+'" text-anchor="middle" font-size="8.5" font-weight="700" fill="#15324a">'+n+'</text>';
+  }
+  s+='<line id="handHour" x1="50" y1="54" x2="50" y2="31" stroke="#15324a" stroke-width="3" stroke-linecap="round"/>';
+  s+='<line id="handMin" x1="50" y1="55" x2="50" y2="21" stroke="#1d5a8a" stroke-width="2.2" stroke-linecap="round"/>';
+  s+='<line id="handSec" x1="50" y1="58" x2="50" y2="17" stroke="#e8403a" stroke-width="1" stroke-linecap="round"/>';
+  s+='<circle cx="50" cy="50" r="2.6" fill="#e8403a"/>';
+  svg.innerHTML=s;
+}
+function updateAnalog(d){
+  var sec=d.getSeconds(), min=d.getMinutes(), hr=d.getHours()%12;
+  var h=document.getElementById('handHour'), m=document.getElementById('handMin'), sc=document.getElementById('handSec');
+  if(h)h.setAttribute('transform','rotate('+(hr*30+min*0.5)+' 50 50)');
+  if(m)m.setAttribute('transform','rotate('+(min*6+sec*0.1)+' 50 50)');
+  if(sc)sc.setAttribute('transform','rotate('+(sec*6)+' 50 50)');
+}
+buildAnalog();
 tick();setInterval(tick,1000);
 
 /* ===== 통합 검색 ===== */
