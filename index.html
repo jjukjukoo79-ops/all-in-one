@@ -79,6 +79,31 @@
   .ghhead h2{color:#fff}
   .ghhead .ic{background:#0d1117;color:#fff}
 
+  /* 법률 도구: 구글 스타일 일관 카테고리 아이콘 */
+  .cat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:12px}
+  .cat{display:flex;flex-direction:column;align-items:center;gap:9px;padding:15px 8px;border-radius:16px;
+    background:#f5faff;border:1px solid var(--line);cursor:pointer;transition:.15s;text-decoration:none;color:var(--ink2)}
+  .cat:hover{background:#e9f3ff;transform:translateY(-2px);border-color:var(--accent)}
+  .cat.active{background:#e3f1ff;border-color:var(--accent);box-shadow:0 4px 12px rgba(46,125,209,.18)}
+  .cat .ic-circle{width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex:none}
+  .cat .ic-circle svg{width:25px;height:25px}
+  .cat .cat-label{font-size:13px;font-weight:700;text-align:center;line-height:1.25}
+  .cat.add{background:transparent;border-style:dashed;border-color:#a8cdf0;color:#5e9bd6}
+  .cat.add:hover{background:#eef6ff}
+  .cat-panel{display:none;margin-top:14px;background:#f0f7ff;border:1px solid var(--line);border-radius:14px;padding:14px}
+  .cat-panel.show{display:block;animation:fadeIn .18s ease}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+  .cat-panel-title{font-size:14px;font-weight:800;color:var(--ink);margin-bottom:12px;display:flex;align-items:center;gap:9px}
+  .cat-panel-title .ic-circle{width:28px;height:28px}.cat-panel-title .ic-circle svg{width:16px;height:16px}
+  .cat-links{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px}
+  .cat-links a{display:flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--line);border-radius:10px;
+    padding:10px 12px;font-size:13px;font-weight:600;color:var(--ink2);text-decoration:none}
+  .cat-links a:hover{background:#e3f1ff;color:var(--accent);border-color:var(--accent)}
+  .cat-links a::before{content:"›";color:var(--accent);font-weight:800}
+  .cat-links .addlink{border:1px dashed #a8cdf0;background:#f7fbff;color:#5e9bd6;border-radius:10px;padding:10px 12px;
+    font-size:13px;font-weight:700;cursor:pointer;justify-content:center}
+  .cat-panel .ph{grid-column:1/-1;font-size:13px;color:#9bb6cc;padding:4px 2px}
+
   /* 위젯: 할일 */
   .todo-input{display:flex;gap:8px;margin-bottom:12px}
   .todo-input input{flex:1;border:1px solid var(--line);border-radius:10px;padding:9px 11px;font-size:14px;outline:none}
@@ -193,37 +218,21 @@
       </div>
     </section>
 
-    <!-- 로펌 업무 도구 -->
-    <section class="card col-8">
+    <!-- 법률 업무 도구 -->
+    <section class="card col-6">
       <h2><span class="dot"></span>법률 업무 도구</h2>
-      <div class="links">
-        <a href="https://www.scourt.go.kr/portal/information/events/search/search.jsp" target="_blank"><span class="ic">🔎</span>나의 사건검색</a>
-        <a href="https://ecfs.scourt.go.kr" target="_blank"><span class="ic">📤</span>전자소송</a>
-        <a href="https://glaw.scourt.go.kr" target="_blank"><span class="ic">⚖</span>종합법률정보</a>
-        <a href="https://www.law.go.kr" target="_blank"><span class="ic">📜</span>국가법령정보</a>
-        <a href="https://casenote.kr" target="_blank"><span class="ic">📚</span>케이스노트 판례</a>
-        <a href="https://www.iros.go.kr" target="_blank"><span class="ic">🏛</span>인터넷등기소</a>
-        <a href="https://www.kics.go.kr" target="_blank"><span class="ic">👮</span>형사사법포털</a>
-        <a href="https://www.klac.or.kr" target="_blank"><span class="ic">🤝</span>법률구조공단</a>
-        <a href="https://www.gov.kr" target="_blank"><span class="ic">🇰🇷</span>정부24</a>
-        <a href="https://www.hometax.go.kr" target="_blank"><span class="ic">🧾</span>홈택스</a>
-        <a href="https://www.wetax.go.kr" target="_blank"><span class="ic">💳</span>위택스</a>
-        <a href="https://www.courtauction.go.kr" target="_blank"><span class="ic">🔨</span>법원경매</a>
-      </div>
+      <div class="cat-grid" id="catGrid-legal"></div>
+      <div class="cat-panel" id="catPanel-legal"></div>
     </section>
 
-    <!-- 업무 메모 (간략메모 → 보고) -->
-    <section class="card col-4">
-      <h2><span class="dot"></span>업무 메모 (간략메모)</h2>
-      <textarea class="memo" id="memo" placeholder="한 줄에 하나씩 간략히 적으세요.&#10;예) 김변호사 사건기록 검토&#10;계약서 검토 회신&#10;법원 서면 제출"></textarea>
-      <div class="memo-btns">
-        <button class="btn-report" onclick="reportMemo()">📋 오늘 할일로 보고</button>
-        <button class="btn-ghost" onclick="saveMemoNow()">💾 메모만 저장</button>
-      </div>
-      <div class="saved" id="memoSaved"></div>
+    <!-- 사무실 업무 도구 -->
+    <section class="card col-6">
+      <h2><span class="dot"></span>사무실 업무 도구</h2>
+      <div class="cat-grid" id="catGrid-office"></div>
+      <div class="cat-panel" id="catPanel-office"></div>
     </section>
 
-    <!-- 협업/생산성 도구 -->
+    <!-- 협업/생산성 도구 (한 줄, 전체 폭) -->
     <section class="card col-12">
       <h2><span class="dot"></span>협업 · 생산성</h2>
       <div class="links">
@@ -240,6 +249,17 @@
         <a href="https://map.naver.com" target="_blank"><span class="ic">📍</span>지도</a>
         <a href="https://www.google.com/finance" target="_blank"><span class="ic">📈</span>금융</a>
       </div>
+    </section>
+
+    <!-- 업무 메모 (간략메모 → 보고) : 제일 하단, 전체 폭 -->
+    <section class="card col-12">
+      <h2><span class="dot"></span>업무 메모 (간략메모)</h2>
+      <textarea class="memo" id="memo" placeholder="한 줄에 하나씩 간략히 적으세요.&#10;예) 김변호사 사건기록 검토&#10;계약서 검토 회신&#10;법원 서면 제출"></textarea>
+      <div class="memo-btns">
+        <button class="btn-report" onclick="reportMemo()">📋 오늘 할일로 보고</button>
+        <button class="btn-ghost" onclick="saveMemoNow()">💾 메모만 저장</button>
+      </div>
+      <div class="saved" id="memoSaved"></div>
     </section>
 
   </div>
@@ -360,6 +380,117 @@ function saveAllToCalendar(){
   document.body.appendChild(a); a.click(); document.body.removeChild(a);
   flash('📅 '+t.length+'건 캘린더(.ics) 저장됨');
 }
+
+/* ===== 법률/사무실 업무 도구: 구역(zone)별 카테고리 정리 + 빈 슬롯 ===== */
+var ZONES={
+  legal:{ grid:'catGrid-legal', panel:'catPanel-legal', cKey:'lawfirm_custom_legal', xKey:'lawfirm_extra_legal', cats:[
+    {id:'court',label:'법원',color:'#3b82f6',icon:'court',links:[
+      {n:'인터넷등기소',u:'https://www.iros.go.kr'},
+      {n:'전자소송',u:'https://ecfs.scourt.go.kr'},
+      {n:'법원경매',u:'https://www.courtauction.go.kr'},
+      {n:'나의 사건검색',u:'https://www.scourt.go.kr/portal/information/events/search/search.jsp'},
+      {n:'형사사법포털',u:'https://www.kics.go.kr'}
+    ]},
+    {id:'lawinfo',label:'법률정보',color:'#22c55e',icon:'book',links:[
+      {n:'종합법률정보',u:'https://glaw.scourt.go.kr'},
+      {n:'국가법령정보',u:'https://www.law.go.kr'},
+      {n:'케이스노트 판례',u:'https://casenote.kr'},
+      {n:'법률구조공단',u:'https://www.klac.or.kr'}
+    ]},
+    {id:'tax',label:'세금신고',color:'#f59e0b',icon:'tax',links:[
+      {n:'홈택스',u:'https://www.hometax.go.kr'},
+      {n:'위택스',u:'https://www.wetax.go.kr'},
+      {n:'이택스(서울)',u:'https://etax.seoul.go.kr'}
+    ]},
+    {id:'edoc',label:'전자발급문서',color:'#0ea5e9',icon:'cert',links:[
+      {n:'정부24',u:'https://www.gov.kr'},
+      {n:'전자가족관계등록시스템',u:'https://efamily.scourt.go.kr'}
+    ]}
+  ]},
+  office:{ grid:'catGrid-office', panel:'catPanel-office', cKey:'lawfirm_custom_office', xKey:'lawfirm_extra_office', cats:[
+    {id:'jimyeong',label:'지명원편집기',color:'#8b5cf6',icon:'edit',open:'file:///C:/Users/icecake/Desktop/지명원%20편집기26.06.17.html.html'},
+    {id:'haja',label:'하자소송편집기',color:'#14b8a6',icon:'file',open:'file:///C:/Users/icecake/Desktop/하자소송편집기26.06.17.html.html'},
+    {id:'rebuild',label:'재건축·재개발',color:'#ec4899',icon:'building',links:[]}
+  ]}
+};
+function iconSVG(id){
+  var p={
+    court:'<path d="M3 10 12 4l9 6"/><path d="M3 20h18"/><path d="M6 20v-8M10 20v-8M14 20v-8M18 20v-8"/>',
+    book:'<path d="M12 6C10 5 7 5 4 5v14c3 0 6 0 8 1 2-1 5-1 8-1V5c-3 0-6 0-8 1Z"/><path d="M12 6v14"/>',
+    tax:'<path d="M6 3h12v17l-3-2-3 2-3-2-3 2Z"/><path d="M9 8h6M9 12h6"/>',
+    edit:'<path d="M4 20h4L18 10l-4-4L4 16Z"/><path d="M13 7l4 4"/>',
+    file:'<path d="M7 3h7l5 5v13H7Z"/><path d="M14 3v5h5"/><path d="M10 13h6M10 17h6"/>',
+    building:'<path d="M3 21h18"/><path d="M6 21V9l6-4 6 4v12"/><path d="M9.5 12h1M13.5 12h1M9.5 16h1M13.5 16h1"/>',
+    cert:'<path d="M7 3h7l5 5v13H7Z"/><path d="M14 3v5h5"/><path d="M9.5 13.5l1.5 1.5 3.5-3.5"/>',
+    plus:'<path d="M12 6v12M6 12h12"/>'
+  };
+  return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'+(p[id]||p.plus)+'</svg>';
+}
+function circle(color,icon){return '<span class="ic-circle" style="background:'+color+'1f;color:'+color+'">'+iconSVG(icon)+'</span>';}
+function jget(k){try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}}
+function getCustom(z){return jget(ZONES[z].cKey)||[]}
+function saveCustomL(z,a){localStorage.setItem(ZONES[z].cKey,JSON.stringify(a))}
+function getExtra(z){return jget(ZONES[z].xKey)||{}}
+function saveExtra(z,o){localStorage.setItem(ZONES[z].xKey,JSON.stringify(o))}
+function findCat(z,id){return ZONES[z].cats.filter(function(c){return c.id===id;})[0];}
+function renderZone(z){
+  var Z=ZONES[z], grid=document.getElementById(Z.grid); grid.innerHTML='';
+  Z.cats.forEach(function(cat){
+    var el=document.createElement(cat.open?'a':'div'); el.className='cat'; el.id='cat-'+z+'-'+cat.id;
+    if(cat.open){ el.href=cat.open; el.target='_blank'; }
+    else { el.addEventListener('click',function(){toggleCat(z,cat.id);}); }
+    el.innerHTML=circle(cat.color,cat.icon)+'<span class="cat-label">'+cat.label+'</span>';
+    grid.appendChild(el);
+  });
+  getCustom(z).forEach(function(c,i){
+    var el=document.createElement('div'); el.className='cat'; el.title='우클릭하면 삭제';
+    el.innerHTML=circle('#64748b','plus')+'<span class="cat-label">'+c.n+'</span>';
+    el.addEventListener('click',function(){window.open(c.u,'_blank');});
+    el.addEventListener('contextmenu',function(e){e.preventDefault();if(confirm('"'+c.n+'" 아이콘을 삭제할까요?')){var a=getCustom(z);a.splice(i,1);saveCustomL(z,a);renderZone(z);}});
+    grid.appendChild(el);
+  });
+  var add=document.createElement('div'); add.className='cat add';
+  add.innerHTML='<span class="ic-circle" style="background:#dcecff;color:#5e9bd6">'+iconSVG('plus')+'</span><span class="cat-label">업무 추가</span>';
+  add.addEventListener('click',function(){addCustomLink(z);});
+  grid.appendChild(add);
+}
+function toggleCat(z,id){
+  var panel=document.getElementById(ZONES[z].panel);
+  if(panel.getAttribute('data-cat')===id && panel.classList.contains('show')){
+    panel.classList.remove('show'); panel.removeAttribute('data-cat');
+    document.getElementById(ZONES[z].grid).querySelectorAll('.cat').forEach(function(x){x.classList.remove('active')}); return;
+  }
+  renderPanel(z,id);
+}
+function renderPanel(z,id){
+  var cat=findCat(z,id); if(!cat)return;
+  var panel=document.getElementById(ZONES[z].panel);
+  document.getElementById(ZONES[z].grid).querySelectorAll('.cat').forEach(function(x){x.classList.remove('active')});
+  var elc=document.getElementById('cat-'+z+'-'+id); if(elc)elc.classList.add('active');
+  panel.setAttribute('data-cat',id); panel.innerHTML='';
+  var title=document.createElement('div'); title.className='cat-panel-title';
+  title.innerHTML=circle(cat.color,cat.icon)+cat.label; panel.appendChild(title);
+  var box=document.createElement('div'); box.className='cat-links';
+  var all=(cat.links||[]).concat(getExtra(z)[id]||[]);
+  if(!all.length){ var ph=document.createElement('div'); ph.className='ph'; ph.textContent='아직 등록된 사이트가 없습니다. 아래 + 로 추가하세요.'; box.appendChild(ph); }
+  all.forEach(function(L){ var a=document.createElement('a'); a.href=L.u; a.target='_blank'; a.textContent=L.n; box.appendChild(a); });
+  var add=document.createElement('button'); add.className='addlink'; add.textContent='+ 링크 추가';
+  add.addEventListener('click',function(){addCatLink(z,id);}); box.appendChild(add);
+  panel.appendChild(box); panel.classList.add('show');
+}
+function addCatLink(z,id){
+  var n=prompt('표시할 이름 (예: 정비사업 정보몽땅)'); if(!n)return; n=n.trim(); if(!n)return;
+  var u=prompt('주소(URL) 입력 (https:// 포함)'); if(!u)return; u=u.trim(); if(!u)return;
+  if(!/^(https?:|file:)/i.test(u))u='https://'+u;
+  var x=getExtra(z); if(!x[id])x[id]=[]; x[id].push({n:n,u:u}); saveExtra(z,x); renderPanel(z,id);
+}
+function addCustomLink(z){
+  var n=prompt('아이콘 이름 (예: 사무실 공유폴더)'); if(!n)return; n=n.trim(); if(!n)return;
+  var u=prompt('주소(URL) 또는 파일경로 입력'); if(!u)return; u=u.trim(); if(!u)return;
+  if(!/^(https?:|file:)/i.test(u))u='https://'+u;
+  var a=getCustom(z); a.push({n:n,u:u}); saveCustomL(z,a); renderZone(z);
+}
+renderZone('legal'); renderZone('office');
 </script>
 </body>
 </html>

@@ -12,8 +12,9 @@ $wpMascot  = Join-Path $dir 'wallpaper-mascot.png'
 $wallpaper = if (Test-Path $wpMascot) { $wpMascot } else { Join-Path $dir 'wallpaper-skyblue.png' }
 $desktop   = [Environment]::GetFolderPath('Desktop')
 
-# 1) Create desktop shortcut to the dashboard with the gavel icon
-$lnkPath = Join-Path $desktop '\xEB\xB2\x95\xEB\xAC\xB4 \xEC\x98\xAC\xEC\x9D\xB8\xEC\x9B\x90.lnk'
+# 1) Create desktop shortcut to the dashboard (build the Korean name from code points to avoid encoding issues)
+$name = -join ([char]0xBC95,[char]0xBB34,[char]0x20,[char]0xC62C,[char]0xC778,[char]0xC6D0)  # "법무 올인원"
+$lnkPath = Join-Path $desktop ($name + '.lnk')
 $shell = New-Object -ComObject WScript.Shell
 $sc = $shell.CreateShortcut($lnkPath)
 $sc.TargetPath = $html
@@ -23,19 +24,7 @@ $sc.Description = 'Law Firm All-in-One Dashboard'
 $sc.Save()
 Write-Host "Shortcut created on Desktop."
 
-# 2) Set the wallpaper (centered/fill)
-Set-ItemProperty -Path 'HKCU:\Control Panel\Desktop' -Name WallpaperStyle -Value '10'  # Fill
-Set-ItemProperty -Path 'HKCU:\Control Panel\Desktop' -Name TileWallpaper  -Value '0'
-
-$code = @'
-using System.Runtime.InteropServices;
-public class Wp {
-  [DllImport("user32.dll", CharSet=CharSet.Auto)]
-  public static extern int SystemParametersInfo(int uAction, int uParam, string lpvParam, int fuWinIni);
-}
-'@
-Add-Type $code
-# SPI_SETDESKWALLPAPER = 20, SPIF_UPDATEINIFILE|SPIF_SENDCHANGE = 3
-[Wp]::SystemParametersInfo(20, 0, $wallpaper, 3) | Out-Null
-Write-Host "Wallpaper applied: $wallpaper"
-Write-Host "Done. Check your Desktop."
+# 2) Wallpaper change is intentionally DISABLED (user prefers to keep their own desktop background).
+#    To apply the included wallpaper manually: right-click the image > "Set as desktop background".
+#    ($wallpaper still resolves to the chosen image if you want to re-enable this later.)
+Write-Host "Done. Desktop shortcut created (wallpaper left unchanged)."
