@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>법무 올인원 대시보드</title>
+<link rel="icon" type="image/svg+xml" href="gavel-icon.svg">
+<style>
+  :root{
+    --sky1:#bfe3ff; --sky2:#7fc4ff; --sky3:#4aa6f5;
+    --ink:#0b3a5e; --ink2:#1d5a8a; --card:#ffffff; --line:#d6ebff;
+    --accent:#2e7dd1; --shadow:0 10px 30px rgba(28,90,150,.18);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    font-family:"Malgun Gothic","맑은 고딕",Segoe UI,sans-serif;
+    color:var(--ink);
+    min-height:100vh;
+    background:linear-gradient(160deg,var(--sky1) 0%,var(--sky2) 45%,var(--sky3) 100%);
+    background-attachment:fixed;
+    padding:26px clamp(14px,4vw,48px) 60px;
+  }
+  /* 구름 장식 */
+  body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
+    background:
+      radial-gradient(120px 60px at 12% 18%,rgba(255,255,255,.55),transparent 70%),
+      radial-gradient(160px 70px at 78% 12%,rgba(255,255,255,.45),transparent 70%),
+      radial-gradient(100px 50px at 45% 8%,rgba(255,255,255,.4),transparent 70%);}
+  .wrap{position:relative;z-index:1;max-width:1280px;margin:0 auto}
+
+  /* 헤더 */
+  header{display:flex;align-items:center;gap:18px;flex-wrap:wrap;margin-bottom:22px}
+  .logo-badge{width:74px;height:74px;flex:none;background:#fff;border-radius:20px;
+    box-shadow:0 8px 18px rgba(11,58,94,.30);display:flex;align-items:center;justify-content:center;overflow:hidden}
+  .mascot{width:62px;height:62px;object-fit:contain;animation:walk 1.05s ease-in-out infinite;transform-origin:50% 90%}
+  .mascot.gavel-fb{width:58px;height:58px;animation:none}  /* 판사봉 대체 시 워킹 모션 끔 */
+  @keyframes walk{
+    0%{transform:translateY(0) rotate(-4deg)}
+    25%{transform:translateY(-6px) rotate(0deg)}
+    50%{transform:translateY(0) rotate(4deg)}
+    75%{transform:translateY(-6px) rotate(0deg)}
+    100%{transform:translateY(0) rotate(-4deg)}
+  }
+  .title h1{font-size:clamp(20px,2.6vw,30px);letter-spacing:-.5px;color:#fff;text-shadow:0 2px 10px rgba(11,58,94,.35)}
+  .title p{color:#eaf6ff;font-size:14px;margin-top:2px;text-shadow:0 1px 6px rgba(11,58,94,.3)}
+  .clock{margin-left:auto;text-align:right;color:#fff;text-shadow:0 2px 10px rgba(11,58,94,.35)}
+  .clock .t{font-size:clamp(26px,4vw,40px);font-weight:700;font-variant-numeric:tabular-nums}
+  .clock .d{font-size:14px;opacity:.95}
+
+  /* 검색바 */
+  .searchbar{display:flex;gap:8px;background:var(--card);padding:8px;border-radius:16px;
+    box-shadow:var(--shadow);margin-bottom:24px;align-items:center;flex-wrap:wrap}
+  .searchbar select{border:none;background:#eaf4ff;color:var(--ink);font-weight:700;
+    padding:10px 12px;border-radius:10px;cursor:pointer;font-size:14px}
+  .searchbar input{flex:1;min-width:160px;border:none;outline:none;font-size:15px;padding:10px 6px;background:transparent;color:var(--ink)}
+  .searchbar button{border:none;background:var(--accent);color:#fff;font-weight:700;
+    padding:10px 20px;border-radius:10px;cursor:pointer;font-size:14px}
+  .searchbar button:hover{background:#1f63ab}
+
+  /* 그리드 */
+  .grid{display:grid;grid-template-columns:repeat(12,1fr);gap:18px}
+  .card{background:var(--card);border-radius:18px;box-shadow:var(--shadow);padding:18px 18px 20px;border:1px solid var(--line)}
+  .card h2{font-size:16px;display:flex;align-items:center;gap:8px;margin-bottom:14px;color:var(--ink)}
+  .card h2 .dot{width:10px;height:10px;border-radius:50%;background:var(--accent)}
+  .col-6{grid-column:span 6}.col-4{grid-column:span 4}.col-8{grid-column:span 8}.col-12{grid-column:span 12}
+  @media(max-width:900px){.col-6,.col-4,.col-8{grid-column:span 12}}
+
+  /* 링크 버튼 */
+  .links{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px}
+  .links a{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--ink2);
+    background:#f3f9ff;border:1px solid var(--line);border-radius:12px;padding:11px 12px;font-size:14px;
+    font-weight:600;transition:.15s}
+  .links a:hover{background:#e3f1ff;transform:translateY(-2px);border-color:var(--accent);color:var(--accent)}
+  .links a .ic{width:22px;height:22px;flex:none;display:flex;align-items:center;justify-content:center;
+    background:#dcecff;border-radius:7px;font-size:13px}
+  .ghhead{background:#1c2a3a !important}
+  .ghhead a{background:#24344a;border-color:#33455c;color:#dbe7f5}
+  .ghhead a:hover{background:#2e425c;color:#fff;border-color:#5b7fae}
+  .ghhead h2{color:#fff}
+  .ghhead .ic{background:#0d1117;color:#fff}
+
+  /* 위젯: 할일 */
+  .todo-input{display:flex;gap:8px;margin-bottom:12px}
+  .todo-input input{flex:1;border:1px solid var(--line);border-radius:10px;padding:9px 11px;font-size:14px;outline:none}
+  .todo-input button{border:none;background:var(--accent);color:#fff;border-radius:10px;padding:0 16px;cursor:pointer;font-weight:700}
+  ul.todo{list-style:none;max-height:230px;overflow:auto}
+  ul.todo li{display:flex;align-items:center;gap:10px;padding:9px 4px;border-bottom:1px dashed var(--line);font-size:14px}
+  ul.todo li input{width:17px;height:17px;cursor:pointer;flex:none}
+  ul.todo li span{flex:1;word-break:break-all}
+  ul.todo li.done span{text-decoration:line-through;color:#9bb6cc}
+  ul.todo li .del{cursor:pointer;color:#c25;font-weight:700;border:none;background:none;font-size:16px}
+  .empty{color:#9bb6cc;font-size:13px;text-align:center;padding:16px 0}
+
+  /* 위젯: 메모 */
+  textarea.memo{width:100%;min-height:200px;border:1px solid var(--line);border-radius:12px;padding:12px;
+    font-size:14px;line-height:1.6;resize:vertical;outline:none;font-family:inherit;background:#fcfeff}
+  .saved{font-size:12px;color:#5e9bd6;margin-top:6px;height:16px}
+
+  /* 메모 보고 버튼 */
+  .memo-btns{display:flex;gap:8px;margin-top:10px}
+  .btn-report{flex:1;background:var(--accent);color:#fff;border:none;border-radius:10px;padding:11px;font-weight:700;cursor:pointer;font-size:14px}
+  .btn-report:hover{background:#1f63ab}
+  .btn-ghost{background:#eef6ff;color:var(--ink2);border:1px solid var(--line);border-radius:10px;padding:11px 12px;cursor:pointer;font-weight:600;font-size:13px}
+  .btn-ghost:hover{background:#e0eefc}
+
+  /* 오늘 할일 진행도 */
+  .todo-date{margin-left:auto;font-size:12px;color:#5e9bd6;font-weight:600}
+  .todo-progress{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+  .todo-progress .bar{flex:1;height:9px;background:#e6f1fc;border-radius:5px;overflow:hidden}
+  .todo-progress .bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,#4aa6f5,#2e7dd1);transition:.35s;border-radius:5px}
+  .todo-progress span{font-size:12px;color:var(--ink2);font-weight:700;white-space:nowrap}
+
+  /* 할일 항목: 순번 아이콘 + 상태 + 캘린더 */
+  ul.todo li{gap:6px}
+  ul.todo li .ord{flex:none;width:22px;text-align:center;font-size:18px;color:var(--accent);line-height:1}
+  ul.todo li .ttext{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  ul.todo li.done .ttext{text-decoration:line-through;color:#9bb6cc}
+  ul.todo li.done .ord{text-decoration:none;color:var(--accent)}
+  .status{flex:none;border:none;border-radius:8px;padding:4px 6px;font-size:11px;font-weight:700;cursor:pointer;color:#fff;white-space:nowrap}
+  .status.s0{background:#9bb6cc}.status.s1{background:#2e7dd1}.status.s2{background:#37a86a}
+  .cal{flex:none;border:none;background:#fff2d4;border-radius:8px;padding:3px 5px;cursor:pointer;font-size:13px}
+  .cal:hover{background:#ffe6ac}
+  .todo-foot{display:flex;gap:8px;margin-top:12px}
+  .btn-cal{flex:1;background:#34a853;color:#fff;border:none;border-radius:10px;padding:10px;font-weight:700;cursor:pointer;font-size:13px}
+  .btn-cal:hover{background:#2c8c46}
+
+  footer{text-align:center;color:#eaf6ff;font-size:12px;margin-top:30px;text-shadow:0 1px 6px rgba(11,58,94,.3)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <!-- 로고: 마스코트(로컬, 걷는 모션) / 저장소에선 판사봉으로 자동 대체 -->
+    <div class="logo-badge">
+      <img class="mascot" src="mascot-trans.png" alt="법무 로고"
+           onerror="this.onerror=null;this.src='gavel-icon.svg';this.classList.add('gavel-fb')">
+    </div>
+    <div class="title">
+      <h1>법무 올인원 대시보드</h1>
+      <p id="greet">오늘도 정확하고 신뢰받는 하루 되세요.</p>
+    </div>
+    <div class="clock">
+      <div class="t" id="time">--:--:--</div>
+      <div class="d" id="date">----년 --월 --일</div>
+    </div>
+  </header>
+
+  <!-- 통합 검색 -->
+  <form class="searchbar" onsubmit="return doSearch(event)">
+    <select id="engine">
+      <option value="google">Google</option>
+      <option value="naver">네이버</option>
+      <option value="casenote">판례검색(케이스노트)</option>
+      <option value="law">국가법령정보</option>
+      <option value="github">GitHub</option>
+    </select>
+    <input id="q" type="text" placeholder="검색어를 입력하세요 (사건·법령·판례·코드 등)" autocomplete="off">
+    <button type="submit">검색</button>
+  </form>
+
+  <div class="grid">
+
+    <!-- GitHub 올인원 -->
+    <section class="card ghhead col-8">
+      <h2><span class="dot" style="background:#fff"></span>GitHub 올인원 · @jjukjukoo79-ops</h2>
+      <div class="links">
+        <a href="https://github.com/jjukjukoo79-ops/all-in-one" target="_blank"><span class="ic">★</span>all-in-one 저장소</a>
+        <a href="https://github.com/jjukjukoo79-ops?tab=repositories" target="_blank"><span class="ic">📁</span>내 저장소</a>
+        <a href="https://github.com" target="_blank"><span class="ic">🏠</span>대시보드 홈</a>
+        <a href="https://github.com/issues" target="_blank"><span class="ic">!</span>이슈</a>
+        <a href="https://github.com/pulls" target="_blank"><span class="ic">⑃</span>풀 리퀘스트</a>
+        <a href="https://github.com/notifications" target="_blank"><span class="ic">🔔</span>알림</a>
+        <a href="https://github.com/new" target="_blank"><span class="ic">＋</span>새 저장소</a>
+        <a href="https://gist.github.com" target="_blank"><span class="ic">📝</span>Gist</a>
+        <a href="https://github.com/jjukjukoo79-ops/all-in-one/commits" target="_blank"><span class="ic">⟲</span>커밋 기록</a>
+        <a href="https://github.com/settings/profile" target="_blank"><span class="ic">⚙</span>설정</a>
+      </div>
+    </section>
+
+    <!-- 오늘 할일 -->
+    <section class="card col-4">
+      <h2><span class="dot"></span>오늘 할일<span class="todo-date" id="todoDate"></span></h2>
+      <div class="todo-progress"><div class="bar"><i id="progBar"></i></div><span id="progText">0 / 0 완료</span></div>
+      <div class="todo-input">
+        <input id="todoText" type="text" placeholder="직접 추가 후 Enter" onkeydown="if(event.key==='Enter')addTodo()">
+        <button onclick="addTodo()">＋</button>
+      </div>
+      <ul class="todo" id="todoList"></ul>
+      <div class="todo-foot">
+        <button class="btn-cal" onclick="saveAllToCalendar()">📅 캘린더에 저장(.ics)</button>
+        <button class="btn-ghost" onclick="clearDone()">완료 정리</button>
+      </div>
+    </section>
+
+    <!-- 로펌 업무 도구 -->
+    <section class="card col-8">
+      <h2><span class="dot"></span>법률 업무 도구</h2>
+      <div class="links">
+        <a href="https://www.scourt.go.kr/portal/information/events/search/search.jsp" target="_blank"><span class="ic">🔎</span>나의 사건검색</a>
+        <a href="https://ecfs.scourt.go.kr" target="_blank"><span class="ic">📤</span>전자소송</a>
+        <a href="https://glaw.scourt.go.kr" target="_blank"><span class="ic">⚖</span>종합법률정보</a>
+        <a href="https://www.law.go.kr" target="_blank"><span class="ic">📜</span>국가법령정보</a>
+        <a href="https://casenote.kr" target="_blank"><span class="ic">📚</span>케이스노트 판례</a>
+        <a href="https://www.iros.go.kr" target="_blank"><span class="ic">🏛</span>인터넷등기소</a>
+        <a href="https://www.kics.go.kr" target="_blank"><span class="ic">👮</span>형사사법포털</a>
+        <a href="https://www.klac.or.kr" target="_blank"><span class="ic">🤝</span>법률구조공단</a>
+        <a href="https://www.gov.kr" target="_blank"><span class="ic">🇰🇷</span>정부24</a>
+        <a href="https://www.hometax.go.kr" target="_blank"><span class="ic">🧾</span>홈택스</a>
+        <a href="https://www.wetax.go.kr" target="_blank"><span class="ic">💳</span>위택스</a>
+        <a href="https://www.courtauction.go.kr" target="_blank"><span class="ic">🔨</span>법원경매</a>
+      </div>
+    </section>
+
+    <!-- 업무 메모 (간략메모 → 보고) -->
+    <section class="card col-4">
+      <h2><span class="dot"></span>업무 메모 (간략메모)</h2>
+      <textarea class="memo" id="memo" placeholder="한 줄에 하나씩 간략히 적으세요.&#10;예) 김변호사 사건기록 검토&#10;계약서 검토 회신&#10;법원 서면 제출"></textarea>
+      <div class="memo-btns">
+        <button class="btn-report" onclick="reportMemo()">📋 오늘 할일로 보고</button>
+        <button class="btn-ghost" onclick="saveMemoNow()">💾 메모만 저장</button>
+      </div>
+      <div class="saved" id="memoSaved"></div>
+    </section>
+
+    <!-- 협업/생산성 도구 -->
+    <section class="card col-12">
+      <h2><span class="dot"></span>협업 · 생산성</h2>
+      <div class="links">
+        <a href="https://mail.google.com" target="_blank"><span class="ic">✉</span>Gmail</a>
+        <a href="https://calendar.google.com" target="_blank"><span class="ic">📅</span>캘린더</a>
+        <a href="https://drive.google.com" target="_blank"><span class="ic">📂</span>드라이브</a>
+        <a href="https://docs.google.com" target="_blank"><span class="ic">📄</span>문서</a>
+        <a href="https://sheets.google.com" target="_blank"><span class="ic">📊</span>스프레드시트</a>
+        <a href="https://www.notion.so" target="_blank"><span class="ic">⬛</span>Notion</a>
+        <a href="https://slack.com" target="_blank"><span class="ic">💬</span>Slack</a>
+        <a href="https://chatgpt.com" target="_blank"><span class="ic">🤖</span>ChatGPT</a>
+        <a href="https://claude.ai" target="_blank"><span class="ic">✦</span>Claude</a>
+        <a href="https://translate.google.com" target="_blank"><span class="ic">🌐</span>번역</a>
+        <a href="https://map.naver.com" target="_blank"><span class="ic">📍</span>지도</a>
+        <a href="https://www.google.com/finance" target="_blank"><span class="ic">📈</span>금융</a>
+      </div>
+    </section>
+
+  </div>
+
+  <footer>법무 올인원 대시보드 · 하늘색 테마 · 데이터는 이 브라우저에만 안전하게 저장됩니다.</footer>
+</div>
+
+<script>
+/* ===== 시계 / 인사말 ===== */
+function pad(n){return n<10?'0'+n:n}
+function tick(){
+  var d=new Date();
+  var day=['일','월','화','수','목','금','토'][d.getDay()];
+  document.getElementById('time').textContent=pad(d.getHours())+':'+pad(d.getMinutes())+':'+pad(d.getSeconds());
+  document.getElementById('date').textContent=d.getFullYear()+'년 '+(d.getMonth()+1)+'월 '+d.getDate()+'일 ('+day+')';
+  var h=d.getHours(),g;
+  if(h<6)g='고요한 새벽입니다. 무리하지 마세요.';
+  else if(h<12)g='좋은 아침입니다. 오늘 일정을 확인해 보세요.';
+  else if(h<14)g='점심 잘 챙기셨나요? 오후도 화이팅!';
+  else if(h<18)g='집중이 잘 되는 오후입니다.';
+  else if(h<22)g='오늘 하루도 수고 많으셨습니다.';
+  else g='늦은 시간이네요. 마무리 잘 하세요.';
+  document.getElementById('greet').textContent=g;
+}
+tick();setInterval(tick,1000);
+
+/* ===== 통합 검색 ===== */
+function doSearch(e){
+  e.preventDefault();
+  var q=document.getElementById('q').value.trim();if(!q)return false;
+  var eng=document.getElementById('engine').value,url;
+  switch(eng){
+    case 'naver':url='https://search.naver.com/search.naver?query='+encodeURIComponent(q);break;
+    case 'casenote':url='https://casenote.kr/search/?q='+encodeURIComponent(q);break;
+    case 'law':url='https://www.law.go.kr/LSW/nwRvsLsSearchList.do?query='+encodeURIComponent(q);break;
+    case 'github':url='https://github.com/search?q='+encodeURIComponent(q);break;
+    default:url='https://www.google.com/search?q='+encodeURIComponent(q);
+  }
+  window.open(url,'_blank');return false;
+}
+
+/* ===== 오늘 할일 + 캘린더 (localStorage) ===== */
+var TODO_KEY='lawfirm_todos';
+var STATUS=['처리대기중','처리진행중','처리완료됨'];  /* 5글자 보고 상태 */
+function todayStr(){var d=new Date();return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());}
+function ymd(off){var d=new Date();if(off)d.setDate(d.getDate()+off);return ''+d.getFullYear()+pad(d.getMonth()+1)+pad(d.getDate());}
+function ordIcon(n){return n<=20?String.fromCodePoint(0x2460+n-1):n+'.';}  /* ①②③ … 순번 아이콘 */
+function getTodos(){try{return JSON.parse(localStorage.getItem(TODO_KEY))||[]}catch(e){return[]}}
+function saveTodos(t){localStorage.setItem(TODO_KEY,JSON.stringify(t))}
+function renderTodos(){
+  var list=document.getElementById('todoList'),t=getTodos();
+  list.innerHTML='';
+  if(!t.length){ list.innerHTML='<div class="empty">메모를 적고 "오늘 할일로 보고"를 누르세요.</div>'; }
+  t.forEach(function(item,i){
+    if(typeof item.status==='undefined')item.status=item.done?2:0;
+    var li=document.createElement('li'); if(item.status===2)li.className='done';
+    var ord=document.createElement('span'); ord.className='ord'; ord.textContent=ordIcon(i+1);
+    var chk=document.createElement('input'); chk.type='checkbox'; chk.checked=(item.status===2);
+    chk.onclick=function(){ t[i].status=chk.checked?2:0; saveTodos(t); renderTodos(); };
+    var sp=document.createElement('span'); sp.className='ttext'; sp.textContent=item.text; sp.title=item.text;
+    var stt=document.createElement('button'); stt.className='status s'+item.status; stt.textContent=STATUS[item.status];
+    stt.onclick=function(){ t[i].status=(t[i].status+1)%3; saveTodos(t); renderTodos(); };
+    var cal=document.createElement('button'); cal.className='cal'; cal.title='Google 캘린더에 추가'; cal.textContent='📅';
+    cal.onclick=function(){ addOneToGoogle(item.text); };
+    var del=document.createElement('button'); del.className='del'; del.textContent='×';
+    del.onclick=function(){ t.splice(i,1); saveTodos(t); renderTodos(); };
+    [ord,chk,sp,stt,cal,del].forEach(function(e){li.appendChild(e);});
+    list.appendChild(li);
+  });
+  var done=t.filter(function(x){return x.status===2;}).length;
+  document.getElementById('progText').textContent=done+' / '+t.length+' 완료';
+  document.getElementById('progBar').style.width=(t.length?Math.round(done/t.length*100):0)+'%';
+  document.getElementById('todoDate').textContent=todayStr();
+}
+function addTodo(){
+  var el=document.getElementById('todoText'),v=el.value.trim();if(!v)return;
+  var t=getTodos(); t.push({text:v,status:0,date:todayStr()}); saveTodos(t); el.value=''; renderTodos();
+}
+function clearDone(){
+  var t=getTodos().filter(function(x){return x.status!==2;}); saveTodos(t); renderTodos();
+}
+renderTodos();
+
+/* ===== 업무메모 → 보고 + 캘린더 ===== */
+var MEMO_KEY='lawfirm_memo',memo=document.getElementById('memo'),saved=document.getElementById('memoSaved');
+memo.value=localStorage.getItem(MEMO_KEY)||'';
+var timer;
+function flash(msg){var n=new Date();saved.textContent=(msg||'✓ 저장됨')+' '+pad(n.getHours())+':'+pad(n.getMinutes())+':'+pad(n.getSeconds());}
+memo.addEventListener('input',function(){clearTimeout(timer);timer=setTimeout(function(){localStorage.setItem(MEMO_KEY,memo.value);flash();},500);});
+function saveMemoNow(){localStorage.setItem(MEMO_KEY,memo.value);flash();}
+function reportMemo(){
+  localStorage.setItem(MEMO_KEY,memo.value);
+  var lines=memo.value.split('\n').map(function(s){return s.trim();}).filter(function(s){return s.length;});
+  if(!lines.length){flash('메모가 비어 있어요');return;}
+  var t=getTodos(),seen={}; t.forEach(function(x){seen[x.text]=1;});
+  var added=0;
+  lines.forEach(function(L){ if(!seen[L]){ t.push({text:L,status:0,date:todayStr()}); seen[L]=1; added++; } });
+  saveTodos(t); renderTodos();
+  flash('📋 '+added+'건 오늘 할일로 보고됨');
+}
+function addOneToGoogle(text){
+  var url='https://calendar.google.com/calendar/render?action=TEMPLATE&text='+encodeURIComponent('[업무] '+text)+'&dates='+ymd(0)+'/'+ymd(1);
+  window.open(url,'_blank');
+}
+function saveAllToCalendar(){
+  var t=getTodos(); if(!t.length){flash('저장할 할일이 없어요');return;}
+  var ds=ymd(0),de=ymd(1);
+  var ics='BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//law-allinone//KO\r\nCALSCALE:GREGORIAN\r\n';
+  t.forEach(function(x,i){
+    ics+='BEGIN:VEVENT\r\nUID:'+ds+'-'+i+'-'+Date.now()+'@allinone\r\n';
+    ics+='DTSTART;VALUE=DATE:'+ds+'\r\nDTEND;VALUE=DATE:'+de+'\r\n';
+    ics+='SUMMARY:[업무] '+x.text.replace(/[\r\n,;]/g,' ')+'\r\n';
+    ics+='STATUS:'+(x.status===2?'COMPLETED':'CONFIRMED')+'\r\nEND:VEVENT\r\n';
+  });
+  ics+='END:VCALENDAR\r\n';
+  var blob=new Blob([ics],{type:'text/calendar;charset=utf-8'});
+  var a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='오늘할일_'+todayStr()+'.ics';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  flash('📅 '+t.length+'건 캘린더(.ics) 저장됨');
+}
+</script>
+</body>
+</html>
