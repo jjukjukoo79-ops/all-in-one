@@ -9,3 +9,6 @@ wallpaper-mascot.png
 # 원본 캐릭터 이미지
 카카오.png
 *원본*
+
+# 로컬 개발 설정(미리보기 서버 등)
+.claude/
