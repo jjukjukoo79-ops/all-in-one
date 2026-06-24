@@ -241,6 +241,7 @@
       <div class="links">
         <a href="https://app.notion.com/p/383edbd8178d81ea855ac8e599692918" target="_blank"><span class="ic">⬛</span>Notion</a>
         <a href="file:///C:/Users/icecake/Desktop/상담노트/상담노트.html" target="_blank"><span class="ic">📝</span>상담노트</a>
+        <a href="file:///C:/Users/icecake/Downloads/apt-crawler-master/apt-crawler-master/data/output/영업레이더_최신.html" target="_blank"><span class="ic">🛰</span>영업 레이더</a>
         <a href="https://mail.google.com" target="_blank"><span class="ic">✉</span>Gmail</a>
         <a href="https://calendar.google.com" target="_blank"><span class="ic">📅</span>캘린더</a>
         <a href="https://drive.google.com" target="_blank"><span class="ic">📂</span>드라이브</a>
@@ -266,9 +267,20 @@
       <div class="saved" id="memoSaved"></div>
     </section>
 
+    <!-- 데이터 백업 · 기기 간 이동 -->
+    <section class="card col-12">
+      <h2><span class="dot"></span>데이터 백업 · 기기 간 이동</h2>
+      <p style="font-size:13px;color:var(--ink2);margin-bottom:10px;line-height:1.6">메모·할일·추가한 아이콘을 <b>파일 하나로 저장</b>하고, 다른 기기(폰·집 PC)에서 <b>불러오기</b> 하면 그대로 옮겨집니다. (계정·인터넷 불필요)</p>
+      <div class="memo-btns">
+        <button class="btn-report" onclick="exportBackup()">⬇ 백업 내보내기 (파일 저장)</button>
+        <label class="btn-ghost" style="cursor:pointer;display:inline-flex;align-items:center">⬆ 백업 불러오기<input type="file" accept="application/json,.json" style="display:none" onchange="importBackup(this)"></label>
+      </div>
+      <div class="saved" id="backupMsg"></div>
+    </section>
+
   </div>
 
-  <footer>법무 올인원 대시보드 · 하늘색 테마 · 데이터는 이 브라우저에만 안전하게 저장됩니다.</footer>
+  <footer>법무 올인원 대시보드 · 하늘색 테마 · 데이터는 이 기기에 저장되며, 백업 파일로 다른 기기와 옮길 수 있습니다.</footer>
 </div>
 
 <script>
@@ -440,6 +452,7 @@ var ZONES={
   office:{ grid:'catGrid-office', panel:'catPanel-office', cKey:'lawfirm_custom_office', xKey:'lawfirm_extra_office', cats:[
     {id:'jimyeong',label:'지명원편집기',color:'#8b5cf6',icon:'edit',open:'file:///C:/Users/icecake/Desktop/지명원%20편집기26.06.17.html.html'},
     {id:'haja',label:'하자소송편집기',color:'#14b8a6',icon:'file',open:'file:///C:/Users/icecake/Desktop/하자소송편집기26.06.17.html.html'},
+    {id:'hajahub',label:'하자소송 허브',color:'#0ea5e9',icon:'building',open:'https://jjukjukoo79-ops.github.io/defect-litigation-/하자소송_허브.html'},
     {id:'rebuild',label:'재건축·재개발',color:'#ec4899',icon:'building',links:[]}
   ]}
 };
@@ -522,6 +535,35 @@ function addCustomLink(z){
   var a=getCustom(z); a.push({n:n,u:u}); saveCustomL(z,a); renderZone(z);
 }
 renderZone('legal'); renderZone('office');
+
+/* ===== 데이터 백업 (내보내기/불러오기) — 계정 없이 기기 간 이동 ===== */
+var BACKUP_KEYS=['lawfirm_todos','lawfirm_memo','lawfirm_custom_legal','lawfirm_custom_office','lawfirm_extra_legal','lawfirm_extra_office'];
+function backupFlash(msg){var el=document.getElementById('backupMsg');if(!el)return;var n=new Date();el.textContent=msg+' '+pad(n.getHours())+':'+pad(n.getMinutes())+':'+pad(n.getSeconds());}
+function exportBackup(){
+  var data={_app:'law-allinone',_ver:1,_date:new Date().toISOString()};
+  BACKUP_KEYS.forEach(function(k){var v=localStorage.getItem(k);if(v!==null)data[k]=v;});
+  var blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  var a=document.createElement('a');a.href=URL.createObjectURL(blob);
+  a.download='법무올인원_백업_'+todayStr()+'.json';
+  document.body.appendChild(a);a.click();document.body.removeChild(a);
+  backupFlash('⬇ 백업 파일을 저장했습니다.');
+}
+function importBackup(input){
+  var f=input.files&&input.files[0];if(!f)return;
+  var r=new FileReader();
+  r.onload=function(){
+    try{
+      var data=JSON.parse(r.result);
+      if(data._app!=='law-allinone'){ if(!confirm('이 대시보드의 백업 파일이 아닐 수 있습니다. 그래도 불러올까요?')){input.value='';return;} }
+      var n=0;
+      Object.keys(data).forEach(function(k){ if(k.indexOf('lawfirm_')===0){ localStorage.setItem(k,data[k]); n++; } });
+      alert('✓ 백업을 불러왔습니다 ('+n+'개 항목). 확인을 누르면 화면을 새로고침합니다.');
+      location.reload();
+    }catch(e){ alert('파일을 읽을 수 없습니다. 올바른 백업(.json) 파일인지 확인해 주세요.'); }
+    input.value='';
+  };
+  r.readAsText(f);
+}
 </script>
 </body>
 </html>
