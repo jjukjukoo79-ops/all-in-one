@@ -151,6 +151,24 @@
   .btn-cal{flex:1;background:#34a853;color:#fff;border:none;border-radius:10px;padding:10px;font-weight:700;cursor:pointer;font-size:13px}
   .btn-cal:hover{background:#2c8c46}
 
+  /* 법무 정문 · 바로가기 */
+  .fd-flow{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-bottom:13px}
+  .fd-step{background:var(--ink);color:#fff;font-size:14px;font-weight:700;padding:8px 18px;border-radius:10px}
+  .fd-arrow{color:#7fb2e0;font-weight:700}
+  .fd-tracks{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin-bottom:11px}
+  @media(max-width:640px){.fd-tracks{grid-template-columns:1fr}}
+  .fd-track{border-radius:12px;padding:11px 13px}
+  .fd-track b{font-size:14px;display:block}
+  .fd-track span{font-size:13px;display:block;margin-top:3px}
+  .fd-haja{background:#fcecea;border:1px solid #e8a795}
+  .fd-haja b{color:#a3392a}.fd-haja span{color:#8a5147}
+  .fd-jb{background:#e9f2fb;border:1px solid #85b7eb}
+  .fd-jb b{color:#0c447c}.fd-jb span{color:#185fa5}
+  .fd-safe{font-size:13px;color:var(--ink2);background:#f3f9ff;border:1px solid var(--line);border-radius:9px;padding:8px 11px}
+  .grp-label{font-size:13px;color:var(--ink2);font-weight:700;margin-bottom:8px}
+  .links.web a{background:#e6f1fb;border-color:#b5d4f4;color:#0c447c}
+  .links.web a:hover{background:#d6e8f8;border-color:var(--accent)}
+
   footer{text-align:center;color:#eaf6ff;font-size:12px;margin-top:30px;text-shadow:0 1px 6px rgba(11,58,94,.3)}
 </style>
 </head>
@@ -188,6 +206,41 @@
   </form>
 
   <div class="grid">
+
+    <!-- 법무 정문 (한눈에) -->
+    <section class="card col-12">
+      <h2><span class="dot"></span>🚪 법무 정문 — 한눈에</h2>
+      <div class="fd-flow">
+        <span class="fd-step">받기</span><span class="fd-arrow">›</span>
+        <span class="fd-step">분류</span><span class="fd-arrow">›</span>
+        <span class="fd-step">해결</span><span class="fd-arrow">›</span>
+        <span class="fd-step">기록</span>
+      </div>
+      <div class="fd-tracks">
+        <div class="fd-track fd-haja"><b>하자소송 트랙</b><span>판정 · 보수비 · 감정 · 손배 → 회수(집행)</span></div>
+        <div class="fd-track fd-jb"><b>정비사업 트랙</b><span>분담금 · 동의서 · 허브 → 회수(기성)</span></div>
+      </div>
+      <div class="fd-safe">⚖ 해결의 최종 법률판단 = 변호사 · 사무장·AI = 받기 · 분류 · 기록 · 초안</div>
+    </section>
+
+    <!-- 내 대장 · 자료실 바로가기 -->
+    <section class="card col-12">
+      <h2><span class="dot"></span>🗂️ 내 대장 · 자료실 바로가기</h2>
+      <p class="grp-label">노션 대장</p>
+      <div class="links">
+        <a href="https://app.notion.com/p/d29eec6b95df40f688e914a3cd245a6c" target="_blank"><span class="ic">📁</span>사건 관리대장</a>
+        <a href="https://app.notion.com/p/b54aa8794d9a436192a1df0c15b59dc3" target="_blank"><span class="ic">🗂</span>AI 자산 대장</a>
+        <a href="https://app.notion.com/p/38bedbd8178d81a59ab1c22a09250206" target="_blank"><span class="ic">📋</span>소송·집행 서식</a>
+        <a href="https://app.notion.com/p/eeb114362ded43cf953c82f448e38ec7" target="_blank"><span class="ic">🧱</span>하자소송 자료실</a>
+        <a href="https://app.notion.com/p/383edbd8178d81ea855ac8e599692918" target="_blank"><span class="ic">⬛</span>노션 홈</a>
+      </div>
+      <p class="grp-label" style="margin-top:14px">웹 · 허브 (클릭 즉시)</p>
+      <div class="links web">
+        <a href="https://jjukjukoo79-ops.github.io/law-notion/상담노트.html" target="_blank"><span class="ic">📝</span>상담노트</a>
+        <a href="https://jjukjukoo79-ops.github.io/defect-litigation-/하자소송_허브.html" target="_blank"><span class="ic">🏢</span>하자소송 허브</a>
+        <a href="file:///C:/Users/icecake/Reconstruction-automation/정비사업_허브.html" target="_blank"><span class="ic">🏗</span>정비사업 실무 허브</a>
+      </div>
+    </section>
 
     <!-- GitHub 올인원 -->
     <section class="card ghhead col-8">
